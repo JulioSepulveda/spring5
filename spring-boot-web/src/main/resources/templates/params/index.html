@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th=http://www.thymeleaf.org>
+<head>
+<meta charset="UTF-8">
+<title>Enviar parámetros del Request HTTP GET - URL</title>
+</head>
+<body>
+	<h1>Enviar parámetros del Request HTTP GET - URL</h1>
+	
+	<!--  Ejemplo para meter links enviando un parámetro 
+	Las URL en thymeleaf se tienen que poner con un @ delante
+	El texto que se envía como parámetro tiene que ir entre comillas simples -->
+	<ul>
+		<li><a th:href="@{/params/string(texto='Hola Julio')}">/params/string?texto=Hola Julio</a></li>
+		<li><a th:href="@{/params/string(texto='Que tal Julio')}">/params/string?texto=Que tal Julio</a></li>
+		<li><a th:href="@{/params/mix-params(saludo='Como estás Julio', numero=7)}">/params/mix-params?saludo=Como estás Julio&numero=7</a></li>
+		<li><a th:href="@{/params/mix-params-request(saludo='Como estás Julio', numero=7)}">/params/mix-params-request?saludo=Como estás Julio&numero=7</a></li>
+	</ul>
+
+</body>
+</html>

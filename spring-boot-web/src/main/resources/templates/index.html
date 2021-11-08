@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<!-- Para poder recibir atributos del java tenemos que indicar en la etiqueta html lo siguiente -->
+<html xmlns:th=http://www.thymeleaf.org>
+<head>
+<!-- Tiene que tener el mismo charset que si entramos en el fichero botón derecho properties campo text file encoding -->
+<meta charset="UTF-8" />
+<!-- Para añadir un campo del java usamos th (el cual lo hemos declarado en la etiqueta html) -->
+<title th:text="${titulo}"></title>
+<!-- link para hacer referencia al fichero css que le da los estilos -->
+<link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"></link>
+</head>
+<body>
+<!-- colores declarados en el archivo static/css/style.css -->
+<h1 class="color-rojo" th:text="${titulo}"></h1>
+<h2 class="color-azul">Decorando estilos con recursos estáticos</h2>
+<img th:src="@{/images/GatoNegroHalloween.png}">
+</body>
+</html>
