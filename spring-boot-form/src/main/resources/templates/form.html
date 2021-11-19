@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th=http://www.thymeleaf.org>
+<head>
+<meta charset="UTF-8">
+<title th:text="${titulo}"></title>
+<!-- De esta forma estamos incluyendo bootstrap en el html desde la web -->
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" 
+	  rel="stylesheet" 
+	  integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" 
+	  crossorigin="anonymous"> -->
+	  
+<!-- De esta forma estamos incluyendo bootstrap en el html de forma estática 
+Para ello primero cogemos el link del href anterior y lo ponemos en un navegador. Esa hoja no la guardamos como un archivo y este archivo lo
+copiamos en la carpeta de static -->
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<h3 th:text="${titulo}"></h3>
+	<!-- El method por defecto es get. Si necesitamos que sea post tenemos que especificarlo -->
+	<div class="container">
+		<form th:action="@{/form}" th:object="${usuario}" method="post">
+	
+			<!-- El atributo for del label es para que si se pincha ese campo se ponga directamente el cursor en el input al que hace referencia -->
+			<!-- Los parámetros name los tenemos que controlar en el controller para poder trabajar con los datos -->
+			<!-- El class es para las clases de bootstrap -->
+			<div  class="form-group row">
+				<label for="habilitar" class="col-form-label col-sm-2">Habilitar</label>
+				<div class="row col-sm-4">
+					<input type="checkbox" id="habilitar" th:field="*{habilitar}" class="form-control col-sm-2">
+				</div>
+			</div>
+			
+			<!-- Bloque para poner un radioButton -->
+			<div class="form-group row">
+				<label class="col-form-label col-sm-2">Genero</label>
+				<div th:each="gen: ${genero}" class="row col-sm-2">
+					<input type="radio" th:field="*{genero}" th:value="${gen}" class="form-control col-sm-2">
+					<label for="${#ids.prev('genero')}" th:text="${gen}" class="col-form-label col-sm-2"></label>
+				</div>
+			</div>
+			
+			<!-- Con select estamos indicando que es un listado. Lo rellenamos de la lista de paises con el th:each -->
+			<div class="form-group row">
+				<label for="pais" class="col-form-label col-sm-2">Pais</label>
+				<div class="col-sm-4">
+					<select id="pais" th:field="*{pais}" class="form-control">
+						<!-- Valor por defecto que no envía nada -->
+						<option value="">-- Seleccionar --</option>
+						<option th:each="pais: ${paises}" th:text="${pais}" th:value="${pais}"></option>
+					</select>
+				</div>
+				<div th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}" class="alert alert-danger col-sm-4"></div>
+			</div>
+			
+			<!-- Con el siguiente ejemplo rellenamos un combo pero desde un Map -->
+			<div class="form-group row">
+				<label for="paisMap" class="col-form-label col-sm-2">PaisMap</label>
+				<div class="col-sm-4">
+					<select id="paisMap" th:field="*{paisMap}" class="form-control">
+						<!-- Valor por defecto que no envía nada -->
+						<option value="">-- Seleccionar --</option>
+						<option th:each="paisMap: ${paisesMap.entrySet()}" th:text="${paisMap.value}" th:value="${paisMap.key}"></option>
+					</select>
+				</div>
+				<div th:if="${#fields.hasErrors('paisMap')}" th:errors="*{paisMap}" class="alert alert-danger col-sm-4"></div>
+			</div>
+			
+			<!-- Con el siguiente ejemplo rellenamos un combo pero desde una lista de una clase creada por nosotros -->
+			<div class="form-group row">
+				<label for="paisClas" class="col-form-label col-sm-2">PaisClas</label>
+				<div class="col-sm-4">
+					<select id="paisClas" th:field="*{paisClas}" class="form-control">
+						<!-- Valor por defecto que no envía nada -->
+						<option value="">-- Seleccionar --</option>
+						<option th:each="paisClas: ${listaPaises}" th:text="${paisClas.nombre}" th:value="${paisClas.id}"></option>
+					</select>
+				</div>
+				<div th:if="${#fields.hasErrors('paisClas')}" th:errors="*{paisClas}" class="alert alert-danger col-sm-4"></div>
+			</div>
+			
+			<!-- Este bloque es el que rellena los checkbox con un arrayList		
+			<div>
+				<label>Roles</label>
+				EL each se  se utiliza para sacar un checkbox por cada uno de los valores de la lista
+				<div th:each="role: ${listaRolesString}">
+					<input type="checkbox" th:field="*{roles}" th:value="${role}">
+					Con el for y el helper utilizado lo que hacemos es que si pinchamos en el label del checkbox marque directamente el check
+					El helper lo que hace es recuperar el id que se ha generado automáticamente para ese checkbox
+					<label th:for="${#ids.prev('roles')}" th:text="${role}"></label>
+				</div>
+				<div th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}"></div>
+			</div> 
+			-->
+			
+			<!-- Este bloque es el que rellena los checkbox con un Map
+			<div>
+				<label>Roles</label>
+				EL each se  se utiliza para sacar un checkbox por cada uno de los valores de la lista
+				<div th:each="role: ${listaRolesMap.entrySet()}">
+					<input type="checkbox" th:field="*{roles}" th:value="${role.key}">
+					Con el for y el helper utilizado lo que hacemos es que si pinchamos en el label del checkbox marque directamente el check
+					El helper lo que hace es recuperar el id que se ha generado automáticamente para ese checkbox
+					<label th:for="${#ids.prev('roles')}" th:text="${role.value}"></label>
+				</div>
+				<div th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}"></div>
+			</div>  -->
+			
+			<!-- Este bloque es el que rellena los checkbox desde un objeto Role -->
+			<div class="form-group row">
+				<label class="col-form-label col-sm-2">Roles</label>
+				<!-- EL each se  se utiliza para sacar un checkbox por cada uno de los valores de la lista -->
+				<div th:each="role: ${listaRoles}" class="row col-sm-2">
+					<!-- El checked es para comparar los datos que vienen por defecto del controlador y así poder marcarlo por defecto -->
+					<input type="checkbox" th:field="*{roles}" th:value="${role.id}" th:checked="${#lists.contains(usuario.roles, role)}" 
+						   class="form-control col-sm-2">
+					<!-- Con el for y el helper utilizado lo que hacemos es que si pinchamos en el label del checkbox marque directamente el check
+					El helper lo que hace es recuperar el id que se ha generado automáticamente para ese checkbox -->
+					<label th:for="${#ids.prev('roles')}" th:text="${role.nombre}" class="col-form-label col-sm-2"></label>
+				</div>
+				<div th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}" class="alert alert-danger col-sm-4"></div>
+			</div>
+			
+			
+			<div class="form-group row">
+				<label for="identificador2" class="col-form-label col-sm-2">Identificador</label>
+				<div class="col-sm-4">
+					<input type="text" id="identificador2" th:field="*{identificador2}" class="form-control">
+				</div>
+				<div th:if="${#fields.hasErrors('identificador2')}" th:errors="*{identificador2}"></div>
+			</div>
+			
+			<div class="form-group row">
+				<label for="nombre" class="col-form-label col-sm-2">Nombre</label>
+				<div class="col-sm-4">
+					<input type="text" id="nombre" th:field="*{nombre}" class="form-control">
+				</div>
+				<div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="alert alert-danger col-sm-4"></div>
+			</div>
+			
+			<div class="form-group row">
+				<label for="apellido" class="col-form-label col-sm-2">Apellido</label>
+				<div class="col-sm-4">
+					<input type="text" id="apellido" th:field="*{apellido}" class="form-control">
+				</div>
+				<div th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}" class="alert alert-danger col-sm-4"></div>
+			</div>
+			
+			<div class="form-group row">
+				<label for="username" class="col-form-label col-sm-2">Username</label>
+				<div class="col-sm-4">
+					<!-- Con th:value escribimos el valor devuelto por el controlador cuando hay errores -->
+					<!-- <input type="text" name="username" id="username" th:value="${usuario.username}">-->
+					
+					<!-- Otra forma más robusta de hacer lo anterior. En este caso en th:field en vez de usar $ se usa * ya que el objeto lo tenemos 
+					declarado en la etiqueta form con el campo th:object -->
+					<input type="text" id="username" th:field="*{username}" class="form-control">
+				</div>
+				<!-- Con el siguiente if controlamos que si al enviar el formulario hay algún error nos muestre el mensaje de error debajo del campo -->
+				<!-- <div th:if="${error != null && error.containsKey('username')}" th:text="${error.username}"></div> -->
+				
+				<!-- Otra forma de hacer lo anterior de manera más automática -->
+				<div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="alert alert-danger col-sm-4"></div>
+				
+			</div>
+			
+			<div class="form-group row">
+				<label for="password" class="col-form-label col-sm-2">Password</label>
+				<div class="col-sm-4">
+					<!-- <input type="password" name="password" id="password"> -->
+					
+					<!-- Otra forma más robusta de hacer lo anterior -->
+					<input type="password" th:field="*{password}" id="password" class="form-control">
+				</div>
+				<!--<div th:if="${error != null && error.containsKey('password')}" th:text="${error.password}"></div> -->
+				
+				<!-- Otra forma de hacer lo anterior de manera más automática -->
+				<div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="alert alert-danger col-sm-4"></div>
+			</div>
+			
+			<div class="form-group row">
+				<label for="email" class="col-form-label col-sm-2">Email</label>
+				<div class="col-sm-4">		
+					<!-- <input type="email" name="email" id="email" th:value="${usuario.email}"> -->
+					
+					<!-- Otra forma más robusta de hacer lo anterior -->
+					<input type="text" id="email" th:field="*{email}" class="form-control">
+				</div>
+				<!-- <div th:if="${error != null && error.containsKey('email')}" th:text="${error.email}"></div> -->
+				
+				<!-- Otra forma de hacer lo anterior de manera más automática -->
+				<div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="alert alert-danger col-sm-4"></div>
+			</div>
+			
+			<div class="form-group row">
+				<label for="cuenta" class="col-form-label col-sm-2">Cuenta</label>
+				<div class="col-sm-4">		
+					<!-- Con el type number no nos deja meter nada en el field que no sea un numero -->
+					<input type="number" id="cuenta" th:field="*{cuenta}" class="form-control">
+				</div>
+				<div th:if="${#fields.hasErrors('cuenta')}" th:errors="*{cuenta}" class="alert alert-danger col-sm-4"></div>
+			</div>
+			
+			<div class="form-group row">
+				<label for="fechaNacimiento" class="col-form-label col-sm-2">Fecha</label>
+				<div class="col-sm-4">	
+					<!-- Con el type number no nos deja meter nada en el field que no sea un numero -->
+					<input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" placeholder="yyyy-MM-dd" class="form-control">
+				</div>
+				<div th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}" class="alert alert-danger col-sm-4"></div>
+			</div>
+			
+			<br>
+		
+			<div class="form-group">
+				<!-- Si ponemos el typo email, automaticamente realiza la validación que el campo tenga el formato de un email -->
+				<div>
+					<input type="submit" value="Enviar" class="btn-primary">
+				</div>
+			</div>
+			
+			<!-- Este campo es oculto para el usuario -->
+			<input type="hidden" th:field="*{valorSecreto}">
+	
+		</form>
+	</div>
+</body>
+</html>
