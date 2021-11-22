@@ -15,6 +15,8 @@ copiamos en la carpeta de static -->
 <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 </head>
 <body>
+	<!-- Con th:replace reemplazamos esta sección pot el de la ruta que indicamos -->
+	<section th:replace="componentes/tiempo :: interceptor"></section>
 	<h3 th:text="${titulo}"></h3>
 	<!-- El method por defecto es get. Si necesitamos que sea post tenemos que especificarlo -->
 	<div class="container">
