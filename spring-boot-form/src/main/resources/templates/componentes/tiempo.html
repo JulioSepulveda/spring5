@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th=http://www.thymeleaf.org>
+<!-- No lleva head porque es un plantilla para reutilizarladentro de otros html -->
+<body>
+
+	<section th:fragment="interceptor">
+	<!-- Con el if validamos que si la variable tiempoTranscurrido es null que no se muestre el if -->
+		<div class="alert alert-success" th:if="${tiempoTranscurrido != null}">
+			<span
+				th:text="'Tiempo Transcurrido: ' + ${tiempoTranscurrido} + ' en milisegundos'"></span>
+		</div>
+	</section>
+	
+</body>
+</html>
