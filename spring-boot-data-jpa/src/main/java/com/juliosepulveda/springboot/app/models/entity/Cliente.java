@@ -55,6 +55,8 @@ public class Cliente  implements Serializable{
 	@DateTimeFormat(pattern="yyyy-mm-dd")
 	private Date createAt;
 	
+	private String foto;
+	
 //	//Método para obtener la fecha justo antes de hacer el insert en BBDD
 //	@PrePersist
 //	public void prePersist() {
@@ -99,6 +101,14 @@ public class Cliente  implements Serializable{
 
 	public void setCreateAt(Date createAt) {
 		this.createAt = createAt;
+	}
+
+	public String getFoto() {
+		return foto;
+	}
+
+	public void setFoto(String foto) {
+		this.foto = foto;
 	}
 
 	public static long getSerialversionuid() {
