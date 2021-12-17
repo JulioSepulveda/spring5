@@ -1,13 +1,18 @@
 package com.juliosepulveda.springboot.app.models.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -55,6 +60,13 @@ public class Cliente  implements Serializable{
 	@DateTimeFormat(pattern="yyyy-mm-dd")
 	private Date createAt;
 	
+	/*
+	 * Con esta anotación indicamos que un cliente puede tener muchas facturas
+	 * Con el cascade indicamos que todas las acciones de persistencia se ejecuten en cascada. Es decir si eliminas un cliente se eliminan todas sus facturas de la tabla
+	 */
+	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Factura> facturas;
+	
 	private String foto;
 	
 //	//Método para obtener la fecha justo antes de hacer el insert en BBDD
@@ -62,6 +74,14 @@ public class Cliente  implements Serializable{
 //	public void prePersist() {
 //		createAt = new Date();
 //	}
+	
+	
+	/*
+	 * Creamos el constructor para inicializar la lista de facturas
+	 */
+	public Cliente() {
+		facturas = new ArrayList<Factura>();
+	}
 	
 	public Long getId() {
 		return id;
@@ -103,6 +123,21 @@ public class Cliente  implements Serializable{
 		this.createAt = createAt;
 	}
 
+	public List<Factura> getFacturas() {
+		return facturas;
+	}
+
+	public void setFacturas(List<Factura> facturas) {
+		this.facturas = facturas;
+	}
+	
+	/*
+	 * Método para añadir una nueva factura a la lista 
+	 */
+	public void addFactura(Factura factura) {
+		facturas.add(factura);
+	}
+
 	public String getFoto() {
 		return foto;
 	}
@@ -114,5 +149,15 @@ public class Cliente  implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
+	/*
+	 *Método generado desde el source en el que puedes especificar los campos que quieres que se impriman 
+	 */
+	@Override
+	public String toString() {
+		return nombre + " " + apellido;
+	}
+	
+	
 	
 }
