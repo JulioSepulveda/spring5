@@ -1,5 +1,6 @@
 package com.juliosepulveda.springboot.app.models.dao;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.juliosepulveda.springboot.app.models.entity.Cliente;
@@ -27,6 +28,10 @@ public interface IClienteDao extends PagingAndSortingRepository<Cliente, Long> {
 //	
 //	public void delete(Long id);
 //	
-	
+	/*
+	 * Fetch para recuperar todos los datos de clientes y facturas directamente en una query y no en varias como funciona hasta ahora
+	 */
+	@Query("select c from Cliente c left join fetch c.facturas f where c.id=?1")
+	public Cliente fetchByIdWithFacturas(Long id);
 
 }

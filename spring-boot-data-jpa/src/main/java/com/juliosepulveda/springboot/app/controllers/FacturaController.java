@@ -40,7 +40,11 @@ public class FacturaController {
 	@GetMapping("/ver/{id}")
 	public String ver(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
 		
-		Factura factura = clienteService.findFacturaById(id);
+		/*
+		 * En vez de usar el findFacturaById utilizamos el método fetch que realiza la consulta contra todas las tablas a la vez
+		 */
+		//Factura factura = clienteService.findFacturaById(id);
+		Factura factura = clienteService.fetchByIdWithClienteWithItemFacturaWithProducto(id);
 		
 		if(factura == null) {
 			flash.addFlashAttribute("error", "La factura no existe en la Base de Datos!");
