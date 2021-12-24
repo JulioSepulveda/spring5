@@ -117,17 +117,21 @@ public class ClienteController {
 	 * Ussamos el @RequestParam para incluir la página. Le ponemos el valor por defecto a 0
 	 */
 	@RequestMapping(value={"listar", "/"}, method = RequestMethod.GET)
-	public String Listar(@RequestParam(name="page", defaultValue="0") int page, Model model, Authentication authentication, HttpServletRequest request) {
+	public String Listar(@RequestParam(name="page", defaultValue="0") int page, Model model, HttpServletRequest request) {
+//	public String Listar(@RequestParam(name="page", defaultValue="0") int page, Model model, Authentication authentication, HttpServletRequest request) {
 		
-		if(authentication != null) {
-			logger.info("Hola usuario autenticado, tu username es: " + authentication.getName());
-		}
+		/*
+		 * Se comenta ya que vamos a probar con un metodo estatico. Para poder usar este tendríamos que utilizar la declaración del método comentada
+		 */
+//		if(authentication != null) {
+//			logger.info("Hola usuario autenticado, tu username es: " + authentication.getName());
+//		}
 		
 		//Otra forma de obtener el Authentication sin recibirlo directamente en el método
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
 		if(auth != null) {
-			logger.info("Utilizando forma estática SecurityContextHolder.getContext().getAuthentication(); Usuario autenticado, tu username es: " + authentication.getName());
+			logger.info("Utilizando forma estática SecurityContextHolder.getContext().getAuthentication(); Usuario autenticado, tu username es: " + auth.getName());
 		}
 		
 		//Indica si tienes acceso o no a algún recurso SE TIENE MAS CONTROL

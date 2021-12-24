@@ -1,7 +1,8 @@
 package com.juliosepulveda.springboot.app;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +22,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private LoginSuccessHandler successHandler;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private DataSource dataSource;
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -48,26 +55,30 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 			.exceptionHandling().accessDeniedPage("/error_403"); //Excepción cuando se intenta acceder a un recurso que no se tiene permisos
 	}
-
-	/*
-	 * Bean para poder usar el encriptador de contraseñas
-	 */
-	@Bean
-	public static BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 	
 	/*
 	 * Método para crear usuarios y asignarles su password y roles
 	 */
 	@Autowired
 	public void configurerGlobal(AuthenticationManagerBuilder builder) throws Exception {
-		
-		PasswordEncoder encoder = passwordEncoder();
-		UserBuilder users = User.builder().passwordEncoder(encoder::encode); //Simplificación de User.builder().passwordEncoder(password -> encoder.encode(password));
-		
-		builder.inMemoryAuthentication()
-			.withUser(users.username("admin").password("12345").roles("ADMIN", "USER"))
-			.withUser(users.username("julio").password("12345").roles( "USER"));
+
+		/*
+		 * Comentamos todo este bloque ya que vamos a usar la autenticación por JDBC
+		 */
+//		PasswordEncoder encoder = this.passwordEncoder;
+//		UserBuilder users = User.builder().passwordEncoder(encoder::encode); //Simplificación de User.builder().passwordEncoder(password -> encoder.encode(password));
+//		
+//		builder.inMemoryAuthentication()
+//			.withUser(users.username("admin").password("12345").roles("ADMIN", "USER"))
+//			.withUser(users.username("julio").password("12345").roles( "USER"));
+	
+		/*
+		 * Autenticación por JDBC
+		 */
+		builder.jdbcAuthentication()
+			.dataSource(dataSource)
+			.passwordEncoder(passwordEncoder)
+			.usersByUsernameQuery("select username, password, enabled from users where username=?")
+			.authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id = u.id) where u.username=?");
 	}
 }
