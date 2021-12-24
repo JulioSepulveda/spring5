@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +28,11 @@ import com.juliosepulveda.springboot.app.models.entity.ItemFactura;
 import com.juliosepulveda.springboot.app.models.entity.Producto;
 import com.juliosepulveda.springboot.app.models.service.IClienteService;
 
+
+/*
+ * En este caso el Secured se lo indicamos a la clase ya que todos los métodos de la clase necesitan tener este role para acceder a ellos
+*/
+@Secured("ROLE_ADMIN")
 @Controller
 @RequestMapping("/factura")
 @SessionAttributes("factura")

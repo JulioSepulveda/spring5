@@ -1,10 +1,14 @@
 package com.juliosepulveda.springboot.app.controllers;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -12,6 +16,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,9 +41,17 @@ import com.juliosepulveda.springboot.app.models.service.IClienteService;
 import com.juliosepulveda.springboot.app.models.service.IUploadFileService;
 import com.juliosepulveda.springboot.app.util.paginator.PageRender;
 
+/*
+ * La anotación EnableGlobalMethodSecurity es necesaria indicarla con el atributo securedEnabled a true para poder usar la anotación Secured en cada método para indicar
+ * el role que permite el acceso a ese recurso
+ * El PreAuthorize lo tenemos que activar con prePostEnabled. Es lo mismo que el Secured nada más que necesita utilizar el método hasRole() de la arquitectura.
+ */
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @Controller
 public class ClienteController {
 
+	protected final Log logger = LogFactory.getLog(this.getClass());
+	
 	/*
 	 * EL qualifier se utilizaría si tuvieramos más de una implementación de esta interfaz, para indicar que implementación queremos utilizar
 	 * Para poderlo utilizar, tenemos que indicar en la clase Impl el nombre en la anotacion Persistence y después ese mismo aqui.
@@ -49,6 +69,7 @@ public class ClienteController {
 	 * Método para recuperar las imagenes del archivo
 	 * En el vaue se indica que recupere el nombredel archivo sin el .jpg etc
 	 */
+	@Secured({"ROLE_USER", "ROLE_ADMIN"})
 	@GetMapping(value="/uploads/{filename:.+}")
 	public ResponseEntity<Resource>verFoto(@PathVariable String filename) {
 		
@@ -68,6 +89,9 @@ public class ClienteController {
 	/*
 	 * Método para listar los datos del cliente y ver los detalles del mismo
 	 */
+	//@PreAuthorize("hasRole('ROLE_USER')")
+	//Para usar el PreAuthorize usando más de un role
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	@GetMapping(value="/ver/{id}")
 	public String ver(@PathVariable(value="id") Long id, Map<String, Object> model, RedirectAttributes flash) {
 		
@@ -92,8 +116,46 @@ public class ClienteController {
 	/*
 	 * Ussamos el @RequestParam para incluir la página. Le ponemos el valor por defecto a 0
 	 */
-	@RequestMapping(value="listar", method = RequestMethod.GET)
-	public String Listar(@RequestParam(name="page", defaultValue="0") int page, Model model) {
+	@RequestMapping(value={"listar", "/"}, method = RequestMethod.GET)
+	public String Listar(@RequestParam(name="page", defaultValue="0") int page, Model model, Authentication authentication, HttpServletRequest request) {
+		
+		if(authentication != null) {
+			logger.info("Hola usuario autenticado, tu username es: " + authentication.getName());
+		}
+		
+		//Otra forma de obtener el Authentication sin recibirlo directamente en el método
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		if(auth != null) {
+			logger.info("Utilizando forma estática SecurityContextHolder.getContext().getAuthentication(); Usuario autenticado, tu username es: " + authentication.getName());
+		}
+		
+		//Indica si tienes acceso o no a algún recurso SE TIENE MAS CONTROL
+		if(hasRole("ROLE_ADMIN")) {
+			logger.info("Hola " + auth.getName() + " tienes acceso!");
+		}
+		else {
+			logger.info("Hola " + auth.getName() + " NO tienes acceso!");
+		}
+		
+		//Nos permirte validar el role es lo mismo que lo anterior pero usando la clase SecurityContextHolderAwareRequestWrapper en vez de la creada por nosotros
+		//
+		SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request, "");
+		
+		if(securityContext.isUserInRole("ROLE_ADMIN")) {
+			logger.info("Forma usando SecurityContextHolderAwareRequestWrapper: Hola " + auth.getName() + " tienes acceso!");
+		}
+		else {
+			logger.info("Forma usando SecurityContextHolderAwareRequestWrapper: Hola " + auth.getName() + " NO tienes acceso!");
+		}
+		
+		//Forma usando el HttpServerRequest, es lo mismo que lo anterior
+		if(request.isUserInRole("ROLE_ADMIN")) {
+			logger.info("Forma usando HttpServerRequest: Hola " + auth.getName() + " tienes acceso!");
+		}
+		else {
+			logger.info("Forma usando HttpServerRequest: Hola " + auth.getName() + " NO tienes acceso!");
+		}
 		
 		Pageable pageRequest = PageRequest.of(page, 4);
 		
@@ -112,6 +174,7 @@ public class ClienteController {
 		return "listar";
 	}
 
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value="/form")
 	public String crear(Map<String, Object> model) {
 		
@@ -131,6 +194,7 @@ public class ClienteController {
 	 * objeto al que hace referncia (en este caso de Cliente)
 	 * Con el atributo RedirectAttributes enviamos un mensaje por pantalla del estado de la acción
 	 */
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value="form", method = RequestMethod.POST)
 	public String guardar(@Valid @ModelAttribute("cliente") Cliente cliente, BindingResult result, Model model, @RequestParam("file") MultipartFile foto, RedirectAttributes flash) {
 		
@@ -175,6 +239,7 @@ public class ClienteController {
 	/*
 	 * Método para editar un cliente a a través del id. Este campo tiene que estar anotado con @PathVariable
 	 */
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value="/form/{id}")
 	public String editar(@PathVariable(value="id") Long id, Map<String, Object> model, RedirectAttributes flash) {
 		
@@ -200,6 +265,7 @@ public class ClienteController {
 	/*
 	 * Método para eliminar un cliente a a través del id. Este campo tiene que estar anotado con @PathVariable
 	 */
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value="/eliminar/{id}")
 	public String eliminar(@PathVariable(value="id") Long id, RedirectAttributes flash) {
 		if (id > 0) {
@@ -216,5 +282,34 @@ public class ClienteController {
 		}
 		
 		return "redirect:/listar";
+	}
+	
+	/*
+	 * Devuelve el rol del usuario
+	 */
+	private boolean hasRole(String role) {
+		
+		SecurityContext context = SecurityContextHolder.getContext();
+		
+		if (context == null) {
+			return false;
+		}
+		
+		Authentication auth = context.getAuthentication();
+		
+		if(auth == null) {
+			return false;
+		}
+		
+		//Cualquier tipo de objeto que implemente esta interfaz
+		Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+		
+		for(GrantedAuthority authority: authorities) {
+			if(role.equals(authority.getAuthority())) {
+				logger.info("Hola usuario " + auth.getName() + " tu rol es: " + authority.getAuthority());
+				return true;
+			}
+		}
+		return false;
 	}
 }
