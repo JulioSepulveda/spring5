@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.juliosepulveda.springboot.app.auth.handler.LoginSuccessHandler;
+import com.juliosepulveda.springboot.app.models.service.JpaUserDetailsService;
 
 /*
  *Clase de configuración para el login
@@ -28,6 +29,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private DataSource dataSource;
+	
+	@Autowired
+	private JpaUserDetailsService userDetailsService;
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -74,11 +78,18 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 		/*
 		 * Autenticación por JDBC
+		 * Comentamos la autenticación por JDBC para utilizar JPA
 		 */
-		builder.jdbcAuthentication()
-			.dataSource(dataSource)
-			.passwordEncoder(passwordEncoder)
-			.usersByUsernameQuery("select username, password, enabled from users where username=?")
-			.authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id = u.id) where u.username=?");
-	}
+		
+//		builder.jdbcAuthentication()
+//			.dataSource(dataSource)
+//			.passwordEncoder(passwordEncoder)
+//			.usersByUsernameQuery("select username, password, enabled from users where username=?")
+//			.authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id = u.id) where u.username=?");
+		
+		/*
+		 * Autenticación con JPA
+		 */
+		builder.userDetailsService(userDetailsService);
+	}		
 }
