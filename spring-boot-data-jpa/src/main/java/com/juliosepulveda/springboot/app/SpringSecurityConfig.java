@@ -42,7 +42,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		//Asignamos las rutas que van a ser publicas y las que van a ser privadas
 		http.authorizeRequests()
-			.antMatchers("/", "/css/**", "/js/**", "/images/**", "/listar").permitAll() //Páginas publicas
+			.antMatchers("/", "/css/**", "/js/**", "/images/**", "/listar", "/locale").permitAll() //Páginas publicas
 //			.antMatchers("/ver/**").hasAnyRole("USER")	//Páginas privadas que dependiendo del rol que tenga el usuario podrá acceder o no
 //			.antMatchers("/uploads/**").hasAnyRole("USER") //Páginas privadas que dependiendo del rol que tenga el usuario podrá acceder o no
 //			.antMatchers("/form/**").hasAnyRole("ADMIN") //Páginas privadas que dependiendo del rol que tenga el usuario podrá acceder o no

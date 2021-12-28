@@ -24,7 +24,7 @@
 					<!-- En la etiqueta small colocamos los errores en el caso que los haya. En el if usamos el hadler para ver si hay errores y en el caso
 			que si mostramos el mensaje de error. También en el campo con th:errorclass coloreamos de rojo la celda de ese campo -->
 					<div class="form-group row">
-						<label class="col-sm-2 col-form-label">Nombre</label>
+						<label class="col-sm-2 col-form-label" th:text="#{text.cliente.nombre}">Nombre</label>
 						<div class="col-sm-6">
 							<input type="text" th:field="*{nombre}" class="form-control"
 								th:errorclass="'form-control alert-danger'" /> <small
@@ -34,7 +34,7 @@
 					</div>
 
 					<div class="form-group row">
-						<label class="col-sm-2 col-form-label">Apellido</label>
+						<label class="col-sm-2 col-form-label" th:text="#{text.cliente.apellido}">Apellido</label>
 						<div class="col-sm-6">
 							<input type="text" th:field="*{apellido}" class="form-control"
 								th:errorclass="'form-control alert-danger'" /> <small
@@ -44,7 +44,7 @@
 					</div>
 
 					<div class="form-group row">
-						<label class="col-sm-2 col-form-label">Email</label>
+						<label class="col-sm-2 col-form-label" th:text="#{text.cliente.email}">Email</label>
 						<div class="col-sm-6">
 							<input type="text" th:field="*{email}" class="form-control"
 								th:errorclass="'form-control alert-danger'" /> <small
@@ -54,7 +54,7 @@
 					</div>
 
 					<div class="form-group row">
-						<label class="col-sm-2 col-form-label">Fecha</label>
+						<label class="col-sm-2 col-form-label" th:text="#{text.cliente.createAt}">Fecha</label>
 						<div class="col-sm-6">
 							<input type="text" th:field="*{createAt}" class="form-control"
 								th:errorclass="'form-control alert-danger'" /> <small
@@ -64,7 +64,7 @@
 					</div>
 					
 					<div class="form-group row">
-						<label for="file" class="col-sm-2 col-form-label">Foto</label>
+						<label for="file" class="col-sm-2 col-form-label" th:text="#{text.cliente.foto}">Foto</label>
 						<div class="col-sm-6">
 							<input type="file" name="file" class="form-control"/>
 						</div>
@@ -72,7 +72,7 @@
 
 					<div class="form-group row">
 						<div class="col-sm-6">
-							<input type="submit" value="Crear Cliente"
+							<input type="submit" th:value="${titulo}"
 								class="btn btn-secondary" />
 						</div>
 					</div>
