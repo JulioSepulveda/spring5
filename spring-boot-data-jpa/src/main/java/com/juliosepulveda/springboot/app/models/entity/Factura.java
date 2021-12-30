@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotEmpty;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "facturas")
@@ -105,6 +106,11 @@ public class Factura implements Serializable {
 		this.createAt = createAt;
 	}
 
+	/*
+	 * Esta anotación se usa para que al exportar a XML no se poduzca un bucle infinito al estar relacionada la tabla factura con la de clientes de forma bidireccional.
+	 * Al ponerle esta anotación larelación siempre va hacia delante, de cliente a factura y nunca al reves
+	 */
+	@XmlTransient
 	public Cliente getCliente() {
 		return cliente;
 	}
