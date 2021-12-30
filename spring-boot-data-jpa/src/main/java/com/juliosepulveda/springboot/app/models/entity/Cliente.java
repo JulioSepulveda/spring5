@@ -22,6 +22,10 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 /*
  * Entity para indicar que es la persistencia de una tabla de BBDD
  * Table es para indicar el nombre de la tabla (no es obligatorio)
@@ -53,18 +57,24 @@ public class Cliente  implements Serializable{
 	/*
 	 * Solo se indica el column en este campo ya que en los otros el nombre de la columna de la BBDD es igual y no es necesario indicarlo
 	 * Con Temporal indicamos que tipo de fecha queremos guardar, timestamp, date o time
+	 * @JsonFormat es para establecer el formato de la fecha en el JSON
 	 */
 	@NotNull
 	@Column(name="CREATE_AT")
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern="yyyy-mm-dd")
+	@JsonFormat(pattern="yyyy-mm-dd HH:mm:ss")
 	private Date createAt;
 	
 	/*
 	 * Con esta anotación indicamos que un cliente puede tener muchas facturas
 	 * Con el cascade indicamos que todas las acciones de persistencia se ejecuten en cascada. Es decir si eliminas un cliente se eliminan todas sus facturas de la tabla
+	 * Con la anotación @JsonIgnore ignoramos el atributo factura a la hora de exportar a JSON para que no se cree un bucle infinito
+	 * Con @JsonManagedReference lo que hacemos es indicar que vamos a sacar con JSON la parte delantera de la relación. En factura tenemos que indicar que es la parte trasera
 	 */
 	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	//@JsonIgnore
+	@JsonManagedReference
 	private List<Factura> facturas;
 	
 	private String foto;

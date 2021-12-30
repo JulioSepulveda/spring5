@@ -22,6 +22,8 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotEmpty;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "facturas")
 public class Factura implements Serializable {
@@ -48,8 +50,10 @@ public class Factura implements Serializable {
 	/*
 	 * Con esta anotación indicamos que muchas facturas pueden pertenecer a un mismo cliente
 	 * El fecth es para que podamos indicar si es carga perezosa o no.
+	 * Con @JsonBackReference indicamos que al exportar a JSON no exporte la parte trasera de la relación.
 	 */
 	@ManyToOne(fetch=FetchType.LAZY)
+	@JsonBackReference
 	private Cliente cliente;
 
 	/*

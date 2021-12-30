@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name="facturas_items")
 public class ItemFactura implements Serializable {
@@ -20,8 +22,14 @@ public class ItemFactura implements Serializable {
 	private Long id;
 	private Integer cantidad;
 	
+	/*
+	 * En el fetch se puede poner EAGER en vez de LAZY para que no de problemas al exportar a JSON. Si no se hace ese cambio ase puede poner la anotación @JsonIgnoreProperties
+	 * lo cual es más eficiente
+	 */
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="producto_id")
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	private Producto producto;
 	
 
