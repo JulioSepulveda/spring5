@@ -2,6 +2,7 @@ package com.juliosepulveda.springboot.app.controllers;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -42,6 +44,7 @@ import com.juliosepulveda.springboot.app.models.entity.Cliente;
 import com.juliosepulveda.springboot.app.models.service.IClienteService;
 import com.juliosepulveda.springboot.app.models.service.IUploadFileService;
 import com.juliosepulveda.springboot.app.util.paginator.PageRender;
+import com.juliosepulveda.springboot.app.view.xml.ClienteList;
 
 /*
  * La anotación EnableGlobalMethodSecurity es necesaria indicarla con el atributo securedEnabled a true para poder usar la anotación Secured en cada método para indicar
@@ -122,11 +125,32 @@ public class ClienteController {
 	}
 	
 	/*
+	 * Método listar para devolver en vez de un html un json 
+	 * De esta forma devolverá el listado de clientes como un json
+	 */
+//	@GetMapping(value="/listar-rest")
+//	public @ResponseBody List<Cliente> listarRest() {
+//		
+//		return clienteService.findAll();
+//	}
+	
+	/*
+	 * Método listar para devolver en vez de un html un json 
+	 * De esta forma devolverá el listado de clientes como un json o un xml indicandole el parametro en la url ?format=xml o ?format=json.
+	 * Si no se indica el parámetro lo devolverá por defecto en xml 
+	 */
+	@GetMapping(value="/listar-rest")
+	public @ResponseBody ClienteList listarRest() {
+		
+		return new ClienteList(clienteService.findAll());
+	}
+	
+	/*
 	 * Ussamos el @RequestParam para incluir la página. Le ponemos el valor por defecto a 0
 	 */
-	@RequestMapping(value={"listar", "/"}, method = RequestMethod.GET)
-	public String Listar(@RequestParam(name="page", defaultValue="0") int page, Model model, HttpServletRequest request, Locale locale) {
-//	public String Listar(@RequestParam(name="page", defaultValue="0") int page, Model model, Authentication authentication, HttpServletRequest request) {
+	@RequestMapping(value={"/listar", "/"}, method = RequestMethod.GET)
+	public String listar(@RequestParam(name="page", defaultValue="0") int page, Model model, HttpServletRequest request, Locale locale) {
+//	public String listar(@RequestParam(name="page", defaultValue="0") int page, Model model, Authentication authentication, HttpServletRequest request) {
 		
 		/*
 		 * Se comenta ya que vamos a probar con un metodo estatico. Para poder usar este tendríamos que utilizar la declaración del método comentada
