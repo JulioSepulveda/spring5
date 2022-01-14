@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<!-- Con la etiqueta th:replace lo que hacemos es sustituir la etiqueta de este html por la del html referenciado que tiene el nombre indicado en la etiqueta th:fragment -->
+	<header th:replace="layout/layout :: header"></header>
+
+	<div class="container py-4">
+		<div class="card bg-danger text-white">
+			<div class="card-header"  th:text="#{text.security.error.403.titulo}">Error: Acceso denegado!</div>
+			<div class="card-body">
+				<div class="card-title" th:utext="#{text.security.error.403.permiso(${#authentication.name})}">
+					<!-- En vez de httpServletRequest.remoteUser también se puede usar authentication.name 
+					<h5>Lo sentimos <span th:text="${#httpServletRequest.remoteUser}"></span>, NO tienes permisos para acceder a este recurso.</h5>-->
+					<a th:href="@{/listar}" class="btn btn-outline-light" role="button" th:text="#{text.security.error.403.volver}">Ir al inicio</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>
